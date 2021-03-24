@@ -14,22 +14,16 @@ with request.urlopen('http://data.nba.net/prod/v2/2018/teams.json') as response:
 
 def GetMessage(access_token, room_id):
     """ Get message every 1 min """
-    url = 'https://webexapis.com/v1/messages?roomId=Y2lzY29zcGFyazovL3VzL1JPT00vNjA5Nzk5NDAtNTU3My0xMWViLWEzNzUtY2JkMGE4ZjAxYTA3&max=1'
+    url = 'https://webexapis.com/v1/messages?roomId={}'.format(room_id)
     headers = {
         'Authorization': 'Bearer {}'.format(access_token),
         'Content-Type': 'application/json'
     }
     res = requests.get(url, headers=headers)
-    markdown = res.json()["items"][0]["markdown"]
+    print(res.json())
+    markdown = res.json()["items"][0]["text"] # Dont forgot change 'text' to 'markdown'
 
-    while True:
-        res = requests.get(url, headers=headers)
-        markdown = res.json()["items"][0]["markdown"]
-        if "Hello" == markdown:
-            print("Success!")
-            break
-        else:
-            print("None")
+    print(markdown) # Last Update
 
 def GetLatLon():
     """ Get Latitude and Longitude from Mapquest API """
