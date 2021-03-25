@@ -10,10 +10,6 @@ room_id = 'Y2lzY29zcGFyazovL3VybjpURUFNOnVzLXdlc3QtMl9yL1JPT00vMDBkMWZlODAtNTg4Y
 # room_id = 'Y2lzY29zcGFyazovL3VzL1JPT00vNjA5Nzk5NDAtNTU3My0xMWViLWEzNzUtY2JkMGE4ZjAxYTA3'
 mapquest_key = 'BjrBow9vWa9goDG7zxKeQVeqMnJYk2Tp'
 
-with request.urlopen('http://data.nba.net/prod/v2/2018/teams.json') as response:
-    source = response.read()
-    data = json.loads(source)
-
 def GetMessage(access_token, room_id):
     """ Get message every 1 min """
     url = 'https://webexapis.com/v1/messages?roomId={}'.format(room_id)
@@ -38,14 +34,31 @@ def GetLatLon(mapquest_key, markdown):
         
         lat = data["results"][0]["locations"][0]["displayLatLng"]["lat"]
         lon = data["results"][0]["locations"][0]["displayLatLng"]["lng"]
-
         
-        print(lat, lon)
+        return [str(lat), str(lon)]
+ 
+def CreateMessage(access_token, room_id, latlon):
+    with request.urlopen("http://api.open-notify.org/iss-pass.json?lat=" + latlon[0] + "&lon=" + latlon[1]) as response:
+        source = response.read()
+        data = json.loads(source)
+    date = data[]
+    dulation = data['response'][0]['duration']
+
+    message = "ISS will pass " + markdown + " by " # + Date + Time + " duration " +  + "second"
+    url = 'https://webexapis.com/v1/messages'
+    headers = {
+        'Authorization': 'Bearer {}'.format(access_token),
+        'Content-Type': 'application/json'
+    }
+    params = {'roomId': room_id, 'markdown': message}
+    res = requests.post(url, headers=headers, json=params)
 
 while True:
     markdown = GetMessage(access_token, room_id)
     if markdown:
-        GetLatLon(mapquest_key, markdown)
+        latlon = GetLatLon(mapquest_key, markdown)
+        CreateMessage(access_token, room_id, latlon)
+        print("Send message success!")
     else:
         print("None")
         time.sleep(10)
