@@ -2,25 +2,11 @@ import requests, json, string
 import urllib.request as request
 import datetime, time
 import Message
+import Marketstack
+import Covid_19
 
 # MapQuest Key
 mapquest_key = 'BjrBow9vWa9goDG7zxKeQVeqMnJYk2Tp'
-
-def GetMessage(access_token, room_id):
-    """ Get message from WebEx """
-    url = 'https://webexapis.com/v1/messages?roomId={}'.format(room_id[1])
-    headers = {
-        'Authorization': 'Bearer {}'.format(access_token),
-        'Content-Type': 'application/json'
-    }
-    res = requests.get(url, headers=headers)
-    text = res.json()["items"][0]["text"]
-    message_time = res.json()["items"][0]["created"]
-
-    if text[0] == '/':
-        return [text[1:], message_time]
-    else:
-        return 0
 
 def GetLatLon(mapquest_key, text, access_token, room_id):
     """ Get Latitude and Longitude from Mapquest API """
@@ -67,11 +53,39 @@ def CreateMessage(access_token, room_id, latlon, text):
     print("Message : \"%s\""%message)
 
 def CheckText(text, access_token, room_id):
+    """ Check Message from WebEx Room """
     while True:
         text = Message.GetMessage(access_token, room_id)
         if text == "None" or text.lower() == "location":
             continue
-        elif text.lower():
+        elif text.lower() == "end":
+            print("...................................Leave Location Mode")
+            break
+        # Market Stack Mode
+        elif text.lower() == "market":
+            print("...................................Leave Location Mode")
+            print(".....................................Market Stack Mode")
+            url = 'https://webexapis.com/v1/messages'
+            headers = {
+                'Authorization': 'Bearer {}'.format(access_token),
+                'Content-Type': 'application/json'
+            }
+            params = {'roomId': room_id[1], 'markdown': "Please Enter Symbol..."}
+            requests.post(url, headers=headers, json=params)
+            Marketstack.CheckText(text, access_token, room_id)
+         # Covid-19 Mode
+        elif text.lower() == "covid":
+            print("...............................Leave Market Stack Mode")
+            print(".........................................Covid-19 Mode")
+            url = 'https://webexapis.com/v1/messages'
+            headers = {
+                'Authorization': 'Bearer {}'.format(access_token),
+                'Content-Type': 'application/json'
+            }
+            params = {'roomId': room_id[1], 'markdown': "Please Enter Country..."}
+            requests.post(url, headers=headers, json=params)
+            Covid_19.CheckText(text, access_token, room_id)
+        elif text:
             latlon = GetLatLon(mapquest_key, text, access_token, room_id)
             CreateMessage(access_token, room_id, latlon, text)
             print("Send message to " + room_id[0] + " success!")

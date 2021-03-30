@@ -2,6 +2,8 @@ import requests, json, string, time
 import urllib.request as request
 import Message
 import Location
+import Marketstack
+import Covid_19
 
 # Personal acess token = ZGFkODEwZWMtZDE5Ny00YmMxLWI0ODItM2Y4NGM1ODQ5ZTI4NGM4YzE3MGQtMTM1_P0A1_c1cccb6a-5e2d-4f80-86f9-f0dcefbd12f8
 access_token = input("Enter Personal Access Token : ")
@@ -15,6 +17,7 @@ while True:
     text = Message.GetMessage(access_token, room_id)
     if text == "None":
         continue
+    # Location Mode
     elif text.lower() == "location":
         print(".........................................Location Mode")
         url = 'https://webexapis.com/v1/messages'
@@ -25,4 +28,26 @@ while True:
         params = {'roomId': room_id[1], 'markdown': "Please Enter Location..."}
         requests.post(url, headers=headers, json=params)
         Location.CheckText(text, access_token, room_id)
+    # Market Stack Mode
+    elif text.lower() == "market":
+        print(".....................................Market Stack Mode")
+        url = 'https://webexapis.com/v1/messages'
+        headers = {
+            'Authorization': 'Bearer {}'.format(access_token),
+            'Content-Type': 'application/json'
+        }
+        params = {'roomId': room_id[1], 'markdown': "Please Enter Symbol..."}
+        requests.post(url, headers=headers, json=params)
+        Marketstack.CheckText(text, access_token, room_id)
+    # Covid-19 Mode
+    elif text.lower() == "covid":
+        print(".........................................Covid-19 Mode")
+        url = 'https://webexapis.com/v1/messages'
+        headers = {
+            'Authorization': 'Bearer {}'.format(access_token),
+            'Content-Type': 'application/json'
+        }
+        params = {'roomId': room_id[1], 'markdown': "Please Enter Country..."}
+        requests.post(url, headers=headers, json=params)
+        Covid_19.CheckText(text, access_token, room_id)
     time.sleep(5)
