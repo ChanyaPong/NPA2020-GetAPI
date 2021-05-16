@@ -6,7 +6,7 @@ import Location
 import Covid_19
 
 # Market Stack Key
-market_key = '32a652f5e65aa46ebf94355aec6949f0'
+market_key = ''
 
 def GetMarketData(market_key, text):
     """ Get Market Price on Marget Stack """
