@@ -6,7 +6,7 @@ import Marketstack
 import Covid_19
 
 # MapQuest Key
-mapquest_key = 'BjrBow9vWa9goDG7zxKeQVeqMnJYk2Tp'
+mapquest_key = ''
 
 def GetLatLon(mapquest_key, text, access_token, room_id):
     """ Get Latitude and Longitude from Mapquest API """
